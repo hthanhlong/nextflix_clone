@@ -1,3 +1,16 @@
 from django.db import models
 
-# Create your models here.
+class Role(models.Model):
+    role = models.CharField(max_length=50)
+
+class User(models.Model):
+    email = models.EmailField(max_length=254, unique=True, db_index=True, null=False, blank=False)
+    password = models.CharField(max_length=128, null=False, blank=False)
+    username = models.CharField(max_length=50, unique=True, db_index=True, null=False, blank=False)
+    first_name = models.CharField(max_length=50, null=False, blank=False)
+    last_name = models.CharField(max_length=50, null=False, blank=False)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
