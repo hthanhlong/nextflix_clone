@@ -1,10 +1,9 @@
 from rest_framework.decorators import api_view
 from rest_framework import status
-from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
 from .serializer import UserSignupSerializer, UserLoginSerializer
 from .models import User
-from .utils import generate_random_string, get_tokens
+from .utils import generate_random_string, generate_token
 from backend.utils import ResponseSuccess, ResponseBadRequest
 
 @api_view(['POST'])
@@ -12,12 +11,12 @@ def login(request):
     data = request.data
     serializer = UserLoginSerializer(data=data)
     if not serializer.is_valid():
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return ResponseBadRequest(message="Invalid data!")
     user = User.objects.get(email=data['email'])
     if user:
         password = make_password(data['password'], salt=user.salt)
         if password == user.password:
-            tokens = get_tokens(user)
+            tokens = generate_token(user)
             user_id = user.id
             return ResponseSuccess(
                 message="Login successful!",

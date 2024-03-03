@@ -8,10 +8,10 @@ def generate_random_string(length=10):
     return random_string
 
 
-def get_tokens(user):
+def generate_token(user):
     refresh = RefreshToken.for_user(user)
 
     return {
-        'refresh': str(refresh),
-        'access': str(refresh.access_token),
+        'refreshToken': str(refresh),
+        'accessToken': str(refresh.access_token),
     }
