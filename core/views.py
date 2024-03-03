@@ -4,8 +4,7 @@ from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
 from .serializer import UserSignupSerializer, UserLoginSerializer
 from .models import User
-from .utils import generate_random_string
-# Create your views here.
+from .utils import generate_random_string, get_tokens
 
 @api_view(['POST'])
 def login(request):
@@ -17,7 +16,9 @@ def login(request):
     if user:
         password = make_password(data['password'], salt=user.salt)
         if password == user.password:
-            return Response({"message": "Login successful!"})
+            tokens = get_tokens(user)
+            user_id = user.id
+            return Response({"tokens": tokens, "user_id": user_id})
         else:
             return Response({"message": "Invalid password!"})
     else:
