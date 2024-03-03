@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import make_password
 from .serializer import UserSignupSerializer, UserLoginSerializer
 from .models import User
 from .utils import generate_random_string, get_tokens
+from backend.utils import ResponseSuccess, ResponseBadRequest
 
 @api_view(['POST'])
 def login(request):
@@ -18,11 +19,19 @@ def login(request):
         if password == user.password:
             tokens = get_tokens(user)
             user_id = user.id
-            return Response({"tokens": tokens, "user_id": user_id})
+            return ResponseSuccess(
+                message="Login successful!",
+                data={
+                    "user_id": user_id,
+                    "tokens": tokens
+                }
+            )
         else:
-            return Response({"message": "Invalid password!"})
+            return ResponseBadRequest(
+                message="Invalid password!"
+            )
     else:
-        return Response({"message": "User not found!"})
+        return ResponseBadRequest(message="User not found!")
 
 @api_view(['POST'])
 def signup(request):
@@ -41,6 +50,12 @@ def signup(request):
             salt=salt,
             role_id=role_id
         )
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return ResponseSuccess(
+            message="User created successfully!",
+            status=status.HTTP_201_CREATED
+        )
     else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)       
+        return ResponseBadRequest(
+            message="Invalid data!",
+            data=serializer.errors
+        )       
