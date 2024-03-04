@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import status
+import random
 
 class ResponseSuccess(Response):
     def __init__(self, error_code=1, message="", data=None, status=status.HTTP_200_OK, template_name=None, headers=None, exception=False, content_type=None):
@@ -22,3 +23,6 @@ class ResponseBadRequest(Response):
             "data": data
         }
         super().__init__(data=data, status=status, template_name=template_name, headers=headers, exception=exception, content_type=content_type)
+
+def generate_otp():
+    return random.randint(100000, 999999)        
