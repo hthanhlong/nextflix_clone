@@ -15,7 +15,6 @@ def login(request):
     try:
         user = User.objects.get(email=data['email'])
         if user:
-            pass
             if user.is_authenticated == False:
                 return ResponseBadRequest(
                     message="User not verified!"
