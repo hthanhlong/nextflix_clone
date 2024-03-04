@@ -49,20 +49,26 @@ def signup(request):
         salt = generate_random_string()
         hashed_password = make_password(data['password'], salt=salt)
         otp_code = generate_otp()
-        User.objects.create(
-            email=data['email'],
-            password=hashed_password,
-            username=data['username'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            salt=salt,
-            role_id=role_id,
-            otp_code=otp_code
-        )
-        return ResponseSuccess(
-            message="User created successfully!",
-            status=status.HTTP_201_CREATED
-        )
+        try:
+            User.objects.create(
+                email=data['email'],
+                password=hashed_password,
+                username=data['username'],
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                salt=salt,
+                role_id=role_id,
+                otp_code=otp_code
+            )
+            return ResponseSuccess(
+                message="User created successfully!",
+                status=status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            return ResponseBadRequest(
+                message="User not created!",
+                data=str(e)
+            )
     else:
         return ResponseBadRequest(
             message="Invalid data!",
