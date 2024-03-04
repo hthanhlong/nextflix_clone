@@ -1,10 +1,15 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework import status
 from django.contrib.auth.hashers import make_password
 from .serializer import UserSignupSerializer, UserLoginSerializer
-from .models import User
+from .models import User, Role
 from .utils import generate_random_string, generate_token
 from backend.utils import ResponseSuccess, ResponseBadRequest, generate_otp
+from rest_framework.permissions import IsAuthenticated
+from backend.authenticate import customJWTAuthentication
+import json
+from django.core.serializers import serialize
+
 
 @api_view(['POST'])
 def login(request):
@@ -121,3 +126,19 @@ def resend_otp(request):
             message="User not found!"
         )
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([customJWTAuthentication])
+def get_roles(request):
+    try:
+        roles = Role.objects.all()
+        json_data = [{'id': role.id, 'role': role.role} for role in roles]
+        return ResponseSuccess(
+            message="Roles fetched successfully!",
+            data=json_data,
+        )
+    except Exception as e:  
+        return ResponseBadRequest(
+            message="Roles not fetched!",
+            data=str(e)
+        )
