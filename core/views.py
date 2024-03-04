@@ -131,11 +131,11 @@ def resend_otp(request):
 @authentication_classes([customJWTAuthentication])
 def get_roles(request):
     try:
-        roles = Role.objects.all()
-        json_data = [{'id': role.id, 'role': role.role} for role in roles]
+        queryset = Role.objects.all()
+        roles_list = [{'id': role.id, 'role': role.role} for role in queryset]
         return ResponseSuccess(
             message="Roles fetched successfully!",
-            data=json_data,
+            data=roles_list,
         )
     except Exception as e:  
         return ResponseBadRequest(
