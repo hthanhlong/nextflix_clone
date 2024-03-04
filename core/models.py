@@ -15,7 +15,7 @@ class User(models.Model):
     salt = models.CharField(max_length=50, null=False, blank=False, default='hello')
     role = models.ForeignKey(Role, on_delete=models.CASCADE, null=False, blank=False, default=7)
     is_active = models.BooleanField(default=True)
-    is_authenticated = models.BooleanField(default=True)
+    is_authenticated = models.BooleanField(default=False)
     otp_code = models.CharField(max_length=6, null=True, blank=True, default="123456")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
