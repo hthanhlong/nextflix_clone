@@ -73,19 +73,46 @@ def signup(request):
 @api_view(['POST'])
 def verify_otp(request):
     data = request.data
-    user = User.objects.get(email=data['email'])
-    if user:
-        if user.otp_code == data['otp_code']:
-            user.is_authenticated = True
-            user.save()
-            return ResponseSuccess(
-                message="User verified successfully!"
-            )
+    try:
+        user = User.objects.get(email=data['email'])
+        if user:
+            if user.otp_code == data['otp_code']:
+                user.is_authenticated = True
+                user.save()
+                return ResponseSuccess(
+                    message="User verified successfully!"
+                )
+            else:
+                return ResponseBadRequest(
+                    message="Invalid OTP!"
+                )
         else:
             return ResponseBadRequest(
-                message="Invalid OTP!"
+                message="User not found!"
             )
-    else:
+    except User.DoesNotExist:
         return ResponseBadRequest(
             message="User not found!"
         )
+    
+@api_view(['POST'])
+def resend_otp(request):
+    data = request.data
+    try:
+        user = User.objects.get(email=data['email'])
+        if user:
+            otp_code = generate_otp()
+            user.otp_code = otp_code
+            user.save()
+            return ResponseSuccess(
+                message="OTP sent successfully!"
+            )
+        else:
+            return ResponseBadRequest(
+                message="User not found!"
+            )
+    except User.DoesNotExist:
+        return ResponseBadRequest(
+            message="User not found!"
+        )
+
